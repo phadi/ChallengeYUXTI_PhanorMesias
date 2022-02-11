@@ -10,8 +10,11 @@ namespace Challenge_Back.Strategies
     public class CsvFileStrategy : ILocation
     {
         string _path;
-
-        CsvFileStrategy(string path)
+        public CsvFileStrategy()
+        {
+            _path = "";
+        }
+        public CsvFileStrategy(string path)
         {
             _path = path;
         }

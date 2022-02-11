@@ -2,41 +2,76 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Challenge_Back.Factory;
+using Challenge_Back.Interfaces;
 using Challenge_Back.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Challenge_Back.Controllers
 {
+    /// <summary>
+    /// Clase controlador para manejar API's de localización
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     public class LocationsController : ControllerBase
     {
-        // GET: api/<LocationsController>
+        /// <summary>
+        /// Obtiene una lista de localizaciones generica
+        /// </summary>
+        /// <returns>Respuesta json con lista de localizaciones</returns>
         [HttpGet]
-        public JsonResult Get()
+        public string Get()
         {
-            List<Location> locations = new List<Location>();
-            Location location = new Location();
-            location.Name = "Name 1";
-            location.Availability = 15;
-            locations.Add(location);
-
-            JsonResult jsonResult = new JsonResult(locations);
-            jsonResult.StatusCode = (int)System.Net.HttpStatusCode.OK;
-            //HttpResponseMessage resp = new HttpResponseMessage();resp.
-
-            //Console.WriteLine(jsonResult);
-            return jsonResult;
+            return GetResponse();
         }
 
-        // GET api/<LocationsController>/5
-        [HttpGet("{messageType}")]
+        /// <summary>
+        /// Obtiene lista de localizacion de acuerdo al tipo de mensaje de <paramref name="messageType"/>
+        /// </summary>
+        /// <param name="messageType">Tipo de mensaje a devolver</param>
+        /// <returns>Respuesta json con lista de localizaciones de acuerdo al tipo de mensaje</returns>
+        [HttpGet("byType")]
         public string Get(string messageType)
         {
-            return "value " + messageType;
+            return GetResponse(messageType);
+        }
+
+        /// <summary>
+        /// Obtiene lista de localizacion de acuerdo al tipo de mensaje de <paramref name="messageType"/> 
+        /// Y puede definir la ruta del archivo .csv con <paramref name="path"/>
+        /// </summary>
+        /// <param name="messageType"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        /// 
+        [HttpGet("byPath")]
+        public string Get(string messageType, string path)
+        {
+            return GetResponse(messageType, path);
+        }
+
+        private static string GetResponse(string messageType = null, string path = null)
+        {
+            try
+            {
+                ILocation location = Creator.InstanceLocation(messageType, path);
+                ResponseMessage.Instance.locationList = location.GetLocations();
+                ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
+                ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.InternalServerError;
+                ResponseMessage.Instance.message = ex.Message;
+            }
+
+            string response = JsonSerializer.Serialize(ResponseMessage.Instance);
+            return response;
         }
 
         // POST api/<LocationsController>

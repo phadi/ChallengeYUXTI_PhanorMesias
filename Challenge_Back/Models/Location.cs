@@ -7,11 +7,11 @@ namespace Challenge_Back.Models
 {
     public class Location
     {
-        //public DateTime Date { get; set; }
         public int Id { get; set; }
 
         public string Name { get; set; }
 
-        public int Availability { get; set; }
+        public int InitialAvailability { get; set; }
+        public int FinalAvailability { get; set; }
     }
 }
