@@ -26,5 +26,10 @@ namespace Challenge_Back.Strategies
             
             return locations;
         }
+
+        public void AddLocations(List<Location> locations)
+        {
+            throw new NotImplementedException();
+        }
     }
 } 

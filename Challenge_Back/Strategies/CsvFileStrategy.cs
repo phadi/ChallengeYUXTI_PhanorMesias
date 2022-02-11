@@ -18,6 +18,12 @@ namespace Challenge_Back.Strategies
         {
             _path = path;
         }
+
+        public void AddLocations(List<Location> locations)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<Location> GetLocations()
         {
             List<Location> locations = new List<Location>();

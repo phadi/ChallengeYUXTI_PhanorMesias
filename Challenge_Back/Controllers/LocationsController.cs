@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using Challenge_Back.Factory;
 using Challenge_Back.Interfaces;
 using Challenge_Back.Models;
+using Challenge_Back.ModelsDB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,6 +23,16 @@ namespace Challenge_Back.Controllers
     [ApiController]
     public class LocationsController : ControllerBase
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="configuration"></param>
+        public LocationsController(IConfiguration configuration)
+        {
+            var connection = configuration.GetConnectionString("BdLocationDBContext");
+            ChallengeYuxiPMContext.Configuration = configuration;
+        }
+
         /// <summary>
         /// Obtiene una lista de localizaciones generica
         /// </summary>
@@ -36,7 +48,7 @@ namespace Challenge_Back.Controllers
         /// </summary>
         /// <param name="messageType">Tipo de mensaje a devolver</param>
         /// <returns>Respuesta json con lista de localizaciones de acuerdo al tipo de mensaje</returns>
-        [HttpGet("byType")]
+        [HttpGet("{messageType}")]
         public string Get(string messageType)
         {
             return GetResponse(messageType);
@@ -56,7 +68,7 @@ namespace Challenge_Back.Controllers
             return GetResponse(messageType, path);
         }
 
-        private static string GetResponse(string messageType = null, string path = null)
+        private string GetResponse(string messageType = null, string path = null)
         {
             try
             {

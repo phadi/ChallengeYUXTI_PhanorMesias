@@ -8,6 +8,15 @@ namespace Challenge_Back.Interfaces
 {
     public interface ILocation
     {
+        /// <summary>
+        /// Obtien lista total de Localizaciones 
+        /// </summary>
+        /// <returns></returns>
         List<Location> GetLocations();
+
+        /// <summary>
+        /// Agrega localización a la lista
+        /// </summary>
+        void AddLocations(List<Location> locations);
     }
 }

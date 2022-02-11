@@ -1,5 +1,7 @@
 ﻿using Challenge_Back.Interfaces;
 using Challenge_Back.Models;
+using Challenge_Back.ModelsDB;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,33 @@ namespace Challenge_Back.Strategies
 {
     public class DatabaseStrategy : ILocation
     {
+        private readonly ChallengeYuxiPMContext db = new ChallengeYuxiPMContext();
+
         public List<Location> GetLocations()
         {
-            List<Location> locations = new List<Location>();
+            try
+            {
+                List<LocationDb> locationsDb = db.LocationDb.ToList();
+                List<Location> locations = Location.ConvertToLocationList(locationsDb);
+                return locations;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
 
-            return locations;
+        public void AddLocations(List<Location> locations)
+        {
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
