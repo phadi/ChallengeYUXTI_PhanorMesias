@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Challenge_Back.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -25,16 +26,17 @@ namespace Challenge_Back.Controllers
 
             JsonResult jsonResult = new JsonResult(locations);
             jsonResult.StatusCode = (int)System.Net.HttpStatusCode.OK;
+            //HttpResponseMessage resp = new HttpResponseMessage();resp.
 
-
+            //Console.WriteLine(jsonResult);
             return jsonResult;
         }
 
         // GET api/<LocationsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{messageType}")]
+        public string Get(string messageType)
         {
-            return "value";
+            return "value " + messageType;
         }
 
         // POST api/<LocationsController>
