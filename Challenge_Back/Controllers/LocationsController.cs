@@ -87,9 +87,19 @@ namespace Challenge_Back.Controllers
         }
 
         // POST api/<LocationsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{messageType}")]
+        public void Post(string messageType, [FromBody] string value)
         {
+            //TbRegistroServicio registroNew = JsonConvert.DeserializeObject<TbRegistroServicio>(value);
+            try
+            {
+                ILocation location = Creator.InstanceLocation(messageType);
+                location.AddLocationsAsync(value);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         // PUT api/<LocationsController>/5

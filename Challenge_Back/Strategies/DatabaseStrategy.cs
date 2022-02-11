@@ -2,6 +2,7 @@
 using Challenge_Back.Models;
 using Challenge_Back.ModelsDB;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,11 +29,14 @@ namespace Challenge_Back.Strategies
             
         }
 
-        public void AddLocations(List<Location> locations)
+        public async void AddLocationsAsync(string locationString)
         {
             try
             {
-                
+                List<Location> locations = JsonConvert.DeserializeObject<List<Location>>(locationString);
+                List<LocationDb> locationDbs = Location.ConvertFromLocationList(locations);
+                db.LocationDb.AddRange(locationDbs);
+                await db.SaveChangesAsync();
             }
             catch (Exception ex)
             {

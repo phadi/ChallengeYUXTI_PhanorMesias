@@ -2,6 +2,7 @@
 using Challenge_Back.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,23 +13,41 @@ namespace Challenge_Back.Strategies
         string _path;
         public CsvFileStrategy()
         {
-            _path = "";
+            string fileName = "Documents/LocationsExample.csv";
+            _path = Path.GetFullPath(fileName); 
+            //$"D:/Phanor/Challenge/ChallengeYUXTI_PhanorMesias/Challenge_Back/Documents/LocationsExample.csv";
         }
         public CsvFileStrategy(string path)
         {
             _path = path;
         }
 
-        public void AddLocations(List<Location> locations)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<Location> GetLocations()
         {
             List<Location> locations = new List<Location>();
 
+            string csvData = File.ReadAllText(_path);
+            foreach (string row in csvData.Split("\r\n"))
+            {
+                if (!string.IsNullOrEmpty(row))
+                {
+                    string[] line = row.Split(";");
+                    locations.Add(new Location
+                    {
+                        Id = Convert.ToInt32(line[0]),
+                        Name = line[1],
+                        InitialAvailability = Convert.ToInt32(line[2]),
+                        FinalAvailability = Convert.ToInt32(line[3])
+                    }); 
+                }
+            }
+
             return locations;
+        }
+
+        public void AddLocationsAsync(string locations)
+        {
+            throw new NotImplementedException();
         }
     }
 }

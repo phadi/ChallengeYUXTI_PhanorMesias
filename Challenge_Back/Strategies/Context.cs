@@ -23,14 +23,5 @@ namespace Challenge_Back.Strategies
         {
             this._strategy = strategy;
         }
-
-        public JsonResult GetJsonResult()
-        {
-            var result = this._strategy.GetLocations();
-
-            JsonResult jsonResult = new JsonResult(result);
-
-            return jsonResult;
-        }
     }
 }

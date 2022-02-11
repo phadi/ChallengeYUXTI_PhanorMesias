@@ -27,7 +27,7 @@ namespace Challenge_Back.Strategies
             return locations;
         }
 
-        public void AddLocations(List<Location> locations)
+        public void AddLocationsAsync(string locations)
         {
             throw new NotImplementedException();
         }

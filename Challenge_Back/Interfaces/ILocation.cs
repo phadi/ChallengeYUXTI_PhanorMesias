@@ -17,6 +17,6 @@ namespace Challenge_Back.Interfaces
         /// <summary>
         /// Agrega localización a la lista
         /// </summary>
-        void AddLocations(List<Location> locations);
+        void AddLocationsAsync(string locations);
     }
 }
