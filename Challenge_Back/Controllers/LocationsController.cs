@@ -58,14 +58,34 @@ namespace Challenge_Back.Controllers
         /// Obtiene lista de localizacion de acuerdo al tipo de mensaje de <paramref name="messageType"/> 
         /// Y puede definir la ruta del archivo .csv con <paramref name="path"/>
         /// </summary>
-        /// <param name="messageType"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        /// 
+        /// <param name="messageType">Tipo de mensaje a devolver</param>
+        /// <param name="path">Ruta del archivo csv</param>
+        /// <returns>Respuesta json con lista de localizaciones de acuerdo al tipo de mensaje y al path</returns>
         [HttpGet("byPath")]
         public string Get(string messageType, string path)
         {
             return GetResponse(messageType, path);
+        }
+
+        [HttpGet("byRange")]
+        public string Get(string messageType, int from, int to, string path = null)
+        {
+            try
+            {
+                ILocation location = Creator.InstanceLocation(messageType, path);
+                ResponseMessage.Instance.locationList = location.GetLocationsByRange(from, to);
+                ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.OK;
+                ResponseMessage.Instance.message = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.InternalServerError;
+                ResponseMessage.Instance.message = ex.Message;
+                ResponseMessage.Instance.locationList = null;
+            }
+
+            string response = JsonSerializer.Serialize(ResponseMessage.Instance);
+            return response;
         }
 
         private string GetResponse(string messageType = null, string path = null)
@@ -75,31 +95,43 @@ namespace Challenge_Back.Controllers
                 ILocation location = Creator.InstanceLocation(messageType, path);
                 ResponseMessage.Instance.locationList = location.GetLocations();
                 ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.OK;
+                ResponseMessage.Instance.message = string.Empty;
             }
             catch (Exception ex)
             {
                 ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.InternalServerError;
                 ResponseMessage.Instance.message = ex.Message;
+                ResponseMessage.Instance.locationList = null;
             }
 
             string response = JsonSerializer.Serialize(ResponseMessage.Instance);
             return response;
         }
 
-        // POST api/<LocationsController>
+        /// <summary>
+        /// Create Location
+        /// </summary>
+        /// <param name="messageType">Defines if location is created in DB o CSV file</param>
+        /// <param name="value">Location data to create</param>
         [HttpPost("{messageType}")]
-        public void Post(string messageType, [FromBody] string value)
+        public HttpResponseMessage Post(string messageType, [FromBody] string value)
         {
-            //TbRegistroServicio registroNew = JsonConvert.DeserializeObject<TbRegistroServicio>(value);
+            HttpResponseMessage response = new HttpResponseMessage();
+
             try
             {
                 ILocation location = Creator.InstanceLocation(messageType);
                 location.AddLocationsAsync(value);
+
+                response.StatusCode = System.Net.HttpStatusCode.Created;
             }
             catch (Exception ex)
             {
-                throw ex;
+                response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                response.ReasonPhrase = ex.Message;
             }
+
+            return response;
         }
 
         // PUT api/<LocationsController>/5

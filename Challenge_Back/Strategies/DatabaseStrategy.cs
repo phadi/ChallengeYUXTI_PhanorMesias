@@ -25,8 +25,25 @@ namespace Challenge_Back.Strategies
             catch (Exception ex)
             {
                 throw ex;
+            }            
+        }
+
+        public List<Location> GetLocationsByRange(int fromT, int toT)
+        {
+            try
+            {
+                List<LocationDb> locationDbList = (from l in db.LocationDb
+                                                   where l.InitialAvailability >= fromT && l.FinalAvailability <= toT
+                                                   select l).ToList();
+
+                List<Location> locations = Location.ConvertToLocationList(locationDbList);
+
+                return locations;
             }
-            
+            catch(Exception ex)
+            {
+                throw ex;
+            }            
         }
 
         public async void AddLocationsAsync(string locationString)

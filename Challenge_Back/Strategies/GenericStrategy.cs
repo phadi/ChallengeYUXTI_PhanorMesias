@@ -11,6 +11,12 @@ namespace Challenge_Back.Strategies
     {
         public List<Location> GetLocations()
         {
+            List<Location> locations = GetTotalLocations();
+            return locations;
+        }
+
+        private List<Location> GetTotalLocations()
+        {
             List<Location> locations = new List<Location>();
             for (int i = 1; i <= 5; i++)
             {
@@ -23,8 +29,25 @@ namespace Challenge_Back.Strategies
 
                 locations.Add(location);
             }
-            
+
             return locations;
+        }
+
+        public List<Location> GetLocationsByRange(int fromT, int toT)
+        {
+            try
+            {
+                List<Location> totalLocations = GetTotalLocations();
+                List<Location> locations = (from l in totalLocations
+                                            where l.InitialAvailability >= fromT && l.FinalAvailability <= toT
+                                            select l).ToList();
+
+                return locations;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public void AddLocationsAsync(string locations)
