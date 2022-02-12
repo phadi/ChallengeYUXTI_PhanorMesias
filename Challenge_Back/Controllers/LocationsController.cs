@@ -8,6 +8,7 @@ using Challenge_Back.Factory;
 using Challenge_Back.Interfaces;
 using Challenge_Back.Models;
 using Challenge_Back.ModelsDB;
+using Challenge_Back.Strategies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +32,7 @@ namespace Challenge_Back.Controllers
         {
             var connection = configuration.GetConnectionString("BdLocationDBContext");
             ChallengeYuxiPMContext.Configuration = configuration;
+            CsvFileStrategy.Configuration = configuration;
         }
 
         /// <summary>
@@ -69,33 +71,25 @@ namespace Challenge_Back.Controllers
 
         [HttpGet("byRange")]
         public string Get(string messageType, int from, int to, string path = null)
-        {
-            try
-            {
-                ILocation location = Creator.InstanceLocation(messageType, path);
-                ResponseMessage.Instance.locationList = location.GetLocationsByRange(from, to);
-                ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.OK;
-                ResponseMessage.Instance.message = string.Empty;
-            }
-            catch (Exception ex)
-            {
-                ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.InternalServerError;
-                ResponseMessage.Instance.message = ex.Message;
-                ResponseMessage.Instance.locationList = null;
-            }
-
-            string response = JsonSerializer.Serialize(ResponseMessage.Instance);
-            return response;
+        {            
+            return GetResponse(messageType, path, 2, from, to);
         }
 
-        private string GetResponse(string messageType = null, string path = null)
+        private string GetResponse(string messageType = null, string path = null, int type = 1, int from = 8, int to = 18)
         {
             try
             {
                 ILocation location = Creator.InstanceLocation(messageType, path);
-                ResponseMessage.Instance.locationList = location.GetLocations();
+                switch (type)
+                {
+                    case 1: ResponseMessage.Instance.locationList = location.GetLocations();
+                        break;
+                    case 2: ResponseMessage.Instance.locationList = location.GetLocationsByRange(from, to);
+                        break;
+                }
+                
                 ResponseMessage.Instance.statuCode = (int)System.Net.HttpStatusCode.OK;
-                ResponseMessage.Instance.message = string.Empty;
+                ResponseMessage.Instance.message = location.GetMessage();
             }
             catch (Exception ex)
             {

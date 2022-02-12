@@ -14,6 +14,11 @@ namespace Challenge_Back.Strategies
     {
         private readonly ChallengeYuxiPMContext db = new ChallengeYuxiPMContext();
 
+        public string GetMessage()
+        {
+            return "Localizaciones leidas desde base de datos";
+        }
+
         public List<Location> GetLocations()
         {
             try

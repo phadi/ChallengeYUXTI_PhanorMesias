@@ -1,22 +1,32 @@
-﻿using Challenge_Back.Interfaces;
+﻿
+using Challenge_Back.Interfaces;
 using Challenge_Back.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
+using System.Text;
 
 namespace Challenge_Back.Strategies
 {
     public class CsvFileStrategy : ILocation
     {
         string _path;
+        public static IConfiguration Configuration { get; set; }
+
         public CsvFileStrategy()
         {
-            //string fileName = "Documents/LocationsExample.csv";
-            //_path = Path.GetFullPath(fileName);
-            _path = "Documents/LocationsExample.csv";//D:/Phanor/Challenge/ChallengeYUXTI_PhanorMesias/Challenge_Back
+            _path = Configuration["FTP:rutaFtp"];
+            //"Documents/LocationsExample.csv";//D:/Phanor/Challenge/ChallengeYUXTI_PhanorMesias/Challenge_Back
         }
+
+        public string GetMessage()
+        {
+            return "Archivo .csv leido desde FTP";
+        }
+
         public CsvFileStrategy(string path)
         {
             _path = path;
@@ -31,19 +41,26 @@ namespace Challenge_Back.Strategies
         private List<Location> GetTotalLocations()
         {
             List<Location> locations = new List<Location>();
-            string csvData = File.ReadAllText(_path);
-            foreach (string row in csvData.Split("\r\n"))
+
+            WebRequest request = FtpWebRequest.Create(_path);
+            using (WebResponse response = request.GetResponse())
             {
-                if (!string.IsNullOrEmpty(row))
+                Stream responseStream = response.GetResponseStream();
+                Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
+                using (var reader = new StreamReader(responseStream, encode))
                 {
-                    string[] line = row.Split(";");
-                    locations.Add(new Location
+                   while (!reader.EndOfStream)
                     {
-                        Id = Convert.ToInt32(line[0]),
-                        Name = line[1],
-                        InitialAvailability = Convert.ToInt32(line[2]),
-                        FinalAvailability = Convert.ToInt32(line[3])
-                    });
+                        var line = reader.ReadLine();
+                        var values = line.Split(';');
+                        locations.Add(new Location
+                        {
+                            Id = Convert.ToInt32(values[0]),
+                            Name = values[1],
+                            InitialAvailability = Convert.ToInt32(values[2]),
+                            FinalAvailability = Convert.ToInt32(values[3])
+                        });
+                    }
                 }
             }
 

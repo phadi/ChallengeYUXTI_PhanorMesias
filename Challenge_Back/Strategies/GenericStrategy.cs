@@ -9,6 +9,11 @@ namespace Challenge_Back.Strategies
 {
     public class GenericStrategy : ILocation
     {
+        public string GetMessage()
+        {
+            return "Localizaciones leidas en codigo";
+        }
+
         public List<Location> GetLocations()
         {
             List<Location> locations = GetTotalLocations();

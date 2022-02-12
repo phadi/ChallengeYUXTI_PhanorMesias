@@ -9,6 +9,12 @@ namespace Challenge_Back.Interfaces
     public interface ILocation
     {
         /// <summary>
+        /// Obtiene mensajes de respuesta
+        /// </summary>
+        /// <returns></returns>
+        string GetMessage();
+        
+        /// <summary>
         /// Obtiene lista total de Localizaciones 
         /// </summary>
         /// <returns></returns>
