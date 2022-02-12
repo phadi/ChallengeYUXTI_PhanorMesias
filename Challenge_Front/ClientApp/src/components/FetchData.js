@@ -1,38 +1,42 @@
 import React, { Component } from 'react';
 
 export class FetchData extends Component {
-  static displayName = FetchData.name;
+    static displayName = FetchData.name;
+
+    //const[usuarios, setUsuarios] = useState([]);
+    //const[tablaUsuarios, setTablaUsuarios] = useState([]);
+    //const[busqueda, setBusqueda] = useState("");
 
   constructor(props) {
     super(props);
-    this.state = { forecasts: [], loading: true };
+      this.state = { externaldata: [], loading: true };
   }
 
   componentDidMount() {
-      this.populateWeatherData();
+     // this.populateWeatherData();
       this.populateExternalData();
   }
 
-  static renderForecastsTable(forecasts) {
+    static renderForecastsTable(externaldata) {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Disponible desde</th>
+            <th>Disponible hasta</th>
           </tr>
         </thead>
         <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
-            </tr>
-          )}
+            {externaldata.map(externaldata =>
+                <tr key={externaldata.Id}>
+                    <td>{externaldata.Id}</td>
+                    <td>{externaldata.Name}</td>
+                    <td>{externaldata.InitialAvailability}</td>
+                    <td>{externaldata.FinalAvailability}</td>
+                </tr>
+            )}
         </tbody>
       </table>
     );
@@ -41,12 +45,12 @@ export class FetchData extends Component {
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : FetchData.renderForecastsTable(this.state.forecasts);
+        : FetchData.renderForecastsTable(this.state.externaldata.locationList);
 
     return (
       <div>
-        <h1 id="tabelLabel" >Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>
+        <h1 id="tabelLabel" >Disponibilida de Ubicaciones</h1>
+        <p>Lista de Ubicaciones por disonibilidad</p>
         {contents}
       </div>
     );
@@ -59,9 +63,12 @@ export class FetchData extends Component {
     }
 
     async populateExternalData() {
-        const response = await fetch('https://jsonplaceholder.typicode.com/users');//('https://bingwebsearchpm.cognitiveservices.azure.com/');//
+        const response = await fetch('https://challengeyuxtibackpm.azurewebsites.net/locations/csv');
+        //('https://jsonplaceholder.typicode.com/users');
+        //('https://bingwebsearchpm.cognitiveservices.azure.com/');//
         const data = await response.json();
-        this.setState({ externalData: data });
+        //this.setState({ externalData: data });
+        this.setState({ externaldata: data, loading: false });
         console.log(data);
     }
 }

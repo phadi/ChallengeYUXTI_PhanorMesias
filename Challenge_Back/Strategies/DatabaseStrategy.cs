@@ -55,9 +55,8 @@ namespace Challenge_Back.Strategies
         {
             try
             {
-                List<Location> locations = JsonConvert.DeserializeObject<List<Location>>(locationString);
-                List<LocationDb> locationDbs = Location.ConvertFromLocationList(locations);
-                db.LocationDb.AddRange(locationDbs);
+                LocationDb location = JsonConvert.DeserializeObject<LocationDb>(locationString);
+                db.LocationDb.Add(location);
                 await db.SaveChangesAsync();
             }
             catch (Exception ex)
