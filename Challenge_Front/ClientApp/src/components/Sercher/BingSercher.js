@@ -45,6 +45,7 @@ export class BingSercher extends Component {
                     </table>
                 </div>                
                 <div className={opcionBusqueda === 'Videos' ? "div-inline" : "div-none"}>
+                    <h3>BUSQUEDA POR VIDEOS</h3>
                     <table className='table table-striped' aria-labelledby="locationTable">
                         <thead>
                             <tr>
@@ -65,6 +66,7 @@ export class BingSercher extends Component {
                     </table>
                 </div> 
                 <div className={opcionBusqueda === 'Imagenes' ? "div-inline" : "div-none"}>
+                    <h3>BUSQUEDA POR IMAGENES</h3>
                     <table className='table table-striped' aria-labelledby="locationTable">
                         <thead>
                             <tr>
