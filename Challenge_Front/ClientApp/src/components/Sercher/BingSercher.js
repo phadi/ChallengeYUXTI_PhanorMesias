@@ -3,21 +3,15 @@ import axios from "axios";
 
 export class BingSercher extends Component {
     static displayName = BingSercher.name;
-    // Cookie names for stored data.
-    //static API_KEY_COOKIE = "3a54d38eaf8c4d5fa69ea18926085566";
-    //static CLIENT_ID_COOKIE = "3856c5dc-4d91-47ef-ad17-87550e8cfab2";
-
-    //static CognitiveServicesCredentials = require('@azure/ms-rest-azure-js').CognitiveServicesCredentials;
-    //static WebSearchAPIClient = require('@azure/cognitiveservices-websearch');
-
-    //static BING_ENDPOINT = "https://bingwebsearchpm.cognitiveservices.azure.com/";    
 
     constructor(props) {
         super(props);
         this.state = {
             busqueda: "",
             loading: true,
-            searchResult: []
+            searchResult: [],
+            tableResult: [],
+            opcionBusqueda: "videos"
         };
         this.onChangeValue = this.onChangeValue.bind(this);
         this.buscaElemento = this.buscaElemento.bind(this);
@@ -28,13 +22,15 @@ export class BingSercher extends Component {
             <table className='table table-striped' aria-labelledby="locationTable">
                 <thead>
                     <tr>
-                        <th>Id</th>
+                        <th>Text</th>
+                        <th>URL</th>
                     </tr>
                 </thead>
                 <tbody>
                     {searchResult.map(searchResult =>
-                        <tr key={searchResult.Id}>
-                            <td>{searchResult.Id}</td>
+                        <tr key={searchResult.id}>
+                            <td><a href={searchResult.url} target="_blank"> {searchResult.name}</a></td>
+                            <td><a href={searchResult.url} target="_blank"> {searchResult.url}</a></td>
                         </tr>
                     )}
                 </tbody>
@@ -44,8 +40,8 @@ export class BingSercher extends Component {
 
     render() {
         let contents = this.state.loading
-            ? <p><em>Loading...</em></p>
-            : BingSercher.renderSearchResult(this.state.searchResult);
+            ? <p><em>Searching...</em></p>
+            : BingSercher.renderSearchResult(this.state.tableResult);
 
         return (
             <div className="App">
@@ -70,44 +66,74 @@ export class BingSercher extends Component {
 
     onChangeValue(event) {
         var elementoBusqueda = event.target.value;
-        this.setState({ busqueda: elementoBusqueda});
+        this.setState({ busqueda: elementoBusqueda });
+        if (elementoBusqueda === "") {
+            this.setState({ searchResult: [], tableResult: [], loading: true });
+        }
     }
 
-    buscaElemento() {
+    async buscaElemento() {
         console.log(this.state.busqueda);
 
         if (this.state.busqueda != "") {
-            const { ImageSearchClient } = require("@azure/cognitiveservices-imagesearch");
-            const { CognitiveServicesCredentials } = require("@azure/ms-rest-azure-js");
 
-            const imageSearchKey = "3d2977816c3542fa8ff38c5d7be33204";
-            const imageSearchEndPoint = "https://api.bing.microsoft.com/";
-            const cognitiveServiceCredentials = new CognitiveServicesCredentials(imageSearchKey);
+            const response = await fetch('search/' + this.state.busqueda);
+            const data = await response.json();
+            switch(this.state.opcionBusqueda){
+                case "web": this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
+                    console.log(data.webPages.value);
+                    break;
+                case "videos": this.setState({ searchResult: data, tableResult: data.videos.value, loading: false });
+                    console.log(data.videos.value);
+                    break;
+                case "images": this.setState({ searchResult: data, tableResult: data.images.value, loading: false });
+                    console.log(data.images.value);
+                    break;
+                case "news": this.setState({ searchResult: data, tableResult: data.news.value, loading: false });
+                    console.log(data.news.value);
+                    break;
+                default: this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
+                    console.log(data.webPages.value);
+                    break;
+            }
+            
+            console.log(data);
 
-            //https://bingwebsearchpm.cognitiveservices.azure.com/bing/v7.0/images/search?color=Monochrome&count=10&imageType=Photo&q=azure&safeSearch=Strict
 
-            const client = new ImageSearchClient(cognitiveServiceCredentials, {
-                endpoint: imageSearchEndPoint
-            });
+            //const { ImageSearchClient } = require("@azure/cognitiveservices-imagesearch");
+            //const { CognitiveServicesCredentials } = require("@azure/ms-rest-azure-js");
 
-            const query = this.state.busqueda;
-            const options = {
-                color: "Monochrome",
-                count: 10,
-                imageType: "Photo",
-                safeSearch: "Strict"
-            };
+            //const imageSearchKey = "4e4e7732aa244790919c375d66dcb2cc";
+            //const imageSearchEndPoint = "https://bingserviceyuxiphadi.cognitiveservices.azure.com/";
+            //    //"https://api.bing.microsoft.com/";
+            //const cognitiveServiceCredentials = new CognitiveServicesCredentials(imageSearchKey);
 
-            client.images
-                .search(query, options)
-                .then(result => {
-                    console.log("The result is: ");
-                    console.log(result);
-                })
-                .catch(err => {
-                    console.log("An error occurred:");
-                    console.error(err);
-                });
+            ////https://bingwebsearchpm.cognitiveservices.azure.com/bing/v7.0/images/search?color=Monochrome&count=10&imageType=Photo&q=azure&safeSearch=Strict
+
+            //const client = new ImageSearchClient(cognitiveServiceCredentials, {
+            //    endpoint: imageSearchEndPoint
+            //});
+
+            //const query = this.state.busqueda;
+            //const options = {
+            //    color: "Monochrome",
+            //    count: 10,
+            //    imageType: "Photo",
+            //    safeSearch: "Strict"
+            //};
+
+            //client.images
+            //    .search(query, options)
+            //    .then(result => {
+            //        console.log("The result is: ");
+            //        console.log(result);
+            //    })
+            //    .catch(err => {
+            //        console.log("An error occurred:");
+            //        console.error(err);
+            //    });
+        } else {
+            this.setState({ searchResult: [], tableResult: [], loading: true });
         }
     }
 }
