@@ -49,10 +49,6 @@ export class SearchVideos extends Component {
 
     async buscaElemento(query) {
         console.log("VIDEOS..." + query);
-        this.setState({ tableResult: [] });
-        if (!(query === "" || query === undefined || query === null)) {
-            this.setState({ tableResult: query.value });
-            
-        }
+        this.setState({ tableResult: query });
     }
 }

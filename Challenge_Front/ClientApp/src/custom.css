@@ -8,11 +8,28 @@ code {
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    display: inline-block;
+    white-space: normal;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
 }
 
+.btn-selected {
+    display: inline-block;
+    white-space: normal;
+    color: #fff;
+    background-color: #05b11e;
+    border-color: #1861ac;
+}
+
+.div-inline {
+    display: inline-block;
+}
+
+.div-none {
+    display: none;
+}
 
 
 input[type="radio"] + span {

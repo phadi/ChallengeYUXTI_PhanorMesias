@@ -12,38 +12,77 @@ export class BingSercher extends Component {
             loading: true,
             searchResult: [],
             tableResult: [],
-            opcionBusqueda: "web"
+            tableResultVideo: [],
+            tableResultImage: [],
+            opcionBusqueda: "WebPages"
         };
         this.onChangeValue = this.onChangeValue.bind(this);
         this.buscaElemento = this.buscaElemento.bind(this);
+        this.onChangeType = this.onChangeType.bind(this);
     }
 
-    static renderSearchResult(searchResult, result) {
+    static renderSearchResult(searchResult, resultVideo, resultImage, opcionBusqueda) {
         return (
             
             <div>
-                <h3>BUSQUEDA POR WEBSITES</h3>
-                <table className='table table-striped' aria-labelledby="locationTable">
-                    <thead>
-                        <tr>
-                            <th>Text</th>
-                            <th>URL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {searchResult.map(searchResult =>
-                            <tr key={searchResult.id}>
-                                <td><a href={searchResult.url} target="_blank"> {searchResult.name}</a></td>
-                                <td><a href={searchResult.url} target="_blank"> {searchResult.url}</a></td>
+                <div className={opcionBusqueda === 'WebPages' ? "div-inline" : "div-none"}>
+                    <h3>BUSQUEDA POR WEBSITES</h3>
+                    <table className='table table-striped' aria-labelledby="locationTable">
+                        <thead>
+                            <tr>
+                                <th>Text</th>
+                                <th>URL</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
-                <div displayName="inline">
-                    <SearchVideos busquedaOri={result.videos} />
+                        </thead>
+                        <tbody>
+                            {searchResult.map(searchResult =>
+                                <tr key={searchResult.id}>
+                                    <td><a href={searchResult.url} target="_blank"> {searchResult.name}</a></td>
+                                    <td><a href={searchResult.url} target="_blank"> {searchResult.url}</a></td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>                
+                <div className={opcionBusqueda === 'Videos' ? "div-inline" : "div-none"}>
+                    <table className='table table-striped' aria-labelledby="locationTable">
+                        <thead>
+                            <tr>
+                                <th>Text</th>
+                                <th>Descripcion</th>
+                                <th>URL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {resultVideo.map(searchResult =>
+                                <tr key={searchResult.webSearchUrl}>
+                                    <td><a href={searchResult.contentUrl} target="_blank"> {searchResult.name}</a></td>
+                                    <td><a href={searchResult.contentUrl} target="_blank"> {searchResult.description}</a></td>
+                                    <td><a href={searchResult.contentUrl} target="_blank"> {searchResult.contentUrl}</a></td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div> 
-                <div displayName="none">
-                    <SearchImages busquedaOri={result.images} />
+                <div className={opcionBusqueda === 'Imagenes' ? "div-inline" : "div-none"}>
+                    <table className='table table-striped' aria-labelledby="locationTable">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>URL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {resultImage.map(searchResult =>
+                                <tr key={searchResult.webSearchUrl}>
+                                    <td><a href={searchResult.contentUrl} target="_blank"> <img src={searchResult.contentUrl} width="60" height="60" /></a></td>
+                                    <td><a href={searchResult.contentUrl} target="_blank"> {searchResult.name}</a></td>
+                                    <td><a href={searchResult.contentUrl} target="_blank"> {searchResult.contentUrl}</a></td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div> 
         );
@@ -52,9 +91,27 @@ export class BingSercher extends Component {
     render() {
         let contents = this.state.loading
             ? <p><em>Searching...</em></p>
-            : BingSercher.renderSearchResult(this.state.tableResult, this.state.searchResult);
+            : BingSercher.renderSearchResult(this.state.tableResult, this.state.tableResultVideo, this.state.tableResultImage, this.state.opcionBusqueda);
         return (
             <div className="App">
+                <div>
+                    <input type="submit"
+                        className={this.state.opcionBusqueda === 'WebPages' ? "btn btn-selected" : "btn btn-primary"} 
+                        value="WebPages"
+                        onClick={this.onChangeType}
+                    />&nbsp;&nbsp;
+                    <input type="submit"
+                        className={this.state.opcionBusqueda === 'Videos' ? "btn btn-selected" : "btn btn-primary"} 
+                        value="Videos"
+                        onClick={this.onChangeType}
+                    />&nbsp;&nbsp;
+                    <input type="submit"
+                        className={this.state.opcionBusqueda === 'Imagenes' ? "btn btn-selected" : "btn btn-primary"} 
+                        value="Imagenes"
+                        onClick={this.onChangeType}
+                    />
+                </div>
+                <br />
                 <div className="containerInput">
                     <input type="text"
                         className="form-control inputBuscar"
@@ -78,8 +135,14 @@ export class BingSercher extends Component {
         var elementoBusqueda = event.target.value;
         this.setState({ busqueda: elementoBusqueda });
         if (elementoBusqueda === "") {
-            this.setState({ searchResult: [], tableResult: [], loading: true });
+            this.setState({ searchResult: [], tableResult: [], tableResultVideo: [], tableResultImage: [], loading: true });
         }
+    }
+
+    onChangeType(event) {
+        var cambio = event.target.value;
+        this.setState({ opcionBusqueda: cambio});
+        console.log(this.state.opcionBusqueda);
     }
 
     async buscaElemento() {
@@ -89,27 +152,30 @@ export class BingSercher extends Component {
 
             const response = await fetch('search/' + this.state.busqueda);
             const data = await response.json();
-            this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
+            this.setState({ searchResult: data, loading: false });
 
-            //switch(this.state.opcionBusqueda){
-            //    case "web": this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
-            //        console.log(data.webPages.value);
-            //        break;
-            //    case "videos": this.setState({ searchResult: data, tableResult: data.videos.value, loading: false });
-            //        console.log(data.videos.value);
-            //        break;
-            //    case "images": this.setState({ searchResult: data, tableResult: data.images.value, loading: false });
-            //        console.log(data.images.value);
-            //        break;
-            //    case "news": this.setState({ searchResult: data, tableResult: data.news.value, loading: false });
-            //        console.log(data.news.value);
-            //        break;
-            //    default: this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
-            //        console.log(data.webPages.value);
-            //        break;
-            //}
+            if (data.webPages === "" || data.webPages === undefined || data.webPages === null) {
+                this.setState({ tableResult: [] });
+            } else {
+                this.setState({ tableResult: data.webPages.value });
+            }
+
+            if (data.videos === "" || data.videos === undefined || data.videos === null) {
+                this.setState({ tableResultVideo: [] });
+            } else {
+                this.setState({ tableResultVideo: data.videos.value });
+            }
+
+            if (data.images === "" || data.images === undefined || data.images === null) {
+                this.setState({ tableResultImage: [] });
+            } else {
+                this.setState({ tableResultImage: data.images.value });
+            }
+
+            //<SearchVideos busquedaOri={resultVideo} />
+            //<SearchImages busquedaOri={resultImage} />
             
-            console.log(data);
+            console.log("final " + data);
 
 
             //const { ImageSearchClient } = require("@azure/cognitiveservices-imagesearch");
