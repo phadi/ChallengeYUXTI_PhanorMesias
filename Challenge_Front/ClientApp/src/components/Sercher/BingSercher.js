@@ -1,5 +1,6 @@
 ﻿import React, { Component, useEffect, useState } from 'react';
-import axios from "axios";
+import { SearchVideos } from './SearchVideos';
+import { SearchImages } from './SearchImages';
 
 export class BingSercher extends Component {
     static displayName = BingSercher.name;
@@ -11,44 +12,52 @@ export class BingSercher extends Component {
             loading: true,
             searchResult: [],
             tableResult: [],
-            opcionBusqueda: "videos"
+            opcionBusqueda: "web"
         };
         this.onChangeValue = this.onChangeValue.bind(this);
         this.buscaElemento = this.buscaElemento.bind(this);
     }
 
-    static renderSearchResult(searchResult) {
+    static renderSearchResult(searchResult, result) {
         return (
-            <table className='table table-striped' aria-labelledby="locationTable">
-                <thead>
-                    <tr>
-                        <th>Text</th>
-                        <th>URL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {searchResult.map(searchResult =>
-                        <tr key={searchResult.id}>
-                            <td><a href={searchResult.url} target="_blank"> {searchResult.name}</a></td>
-                            <td><a href={searchResult.url} target="_blank"> {searchResult.url}</a></td>
+            
+            <div>
+                <table className='table table-striped' aria-labelledby="locationTable">
+                    <thead>
+                        <tr>
+                            <th>Text</th>
+                            <th>URL</th>
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {searchResult.map(searchResult =>
+                            <tr key={searchResult.id}>
+                                <td><a href={searchResult.url} target="_blank"> {searchResult.name}</a></td>
+                                <td><a href={searchResult.url} target="_blank"> {searchResult.url}</a></td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+                <div displayName="inline">
+                    <SearchVideos busquedaOri={result.videos} />
+                </div> 
+                <div displayName="none">
+                    <SearchImages busquedaOri={result.images} />
+                </div>
+            </div> 
         );
     }
 
     render() {
         let contents = this.state.loading
             ? <p><em>Searching...</em></p>
-            : BingSercher.renderSearchResult(this.state.tableResult);
-
+            : BingSercher.renderSearchResult(this.state.tableResult, this.state.searchResult);
         return (
             <div className="App">
                 <div className="containerInput">
                     <input type="text"
                         className="form-control inputBuscar"
-                        placeholder="Disponibilidad Inicial"
+                        placeholder="Elemento de busqueda"
                         onChange={this.onChangeValue}
                         value={this.state.busqueda} />
                     <input type="submit"
@@ -58,8 +67,9 @@ export class BingSercher extends Component {
                     />
                 </div>
                 <div>
+                    <h3>BUSQUEDA POR WEBSITES</h3>
                     {contents}
-                </div>
+                </div>                
             </div>            
         );
     }
@@ -79,23 +89,25 @@ export class BingSercher extends Component {
 
             const response = await fetch('search/' + this.state.busqueda);
             const data = await response.json();
-            switch(this.state.opcionBusqueda){
-                case "web": this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
-                    console.log(data.webPages.value);
-                    break;
-                case "videos": this.setState({ searchResult: data, tableResult: data.videos.value, loading: false });
-                    console.log(data.videos.value);
-                    break;
-                case "images": this.setState({ searchResult: data, tableResult: data.images.value, loading: false });
-                    console.log(data.images.value);
-                    break;
-                case "news": this.setState({ searchResult: data, tableResult: data.news.value, loading: false });
-                    console.log(data.news.value);
-                    break;
-                default: this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
-                    console.log(data.webPages.value);
-                    break;
-            }
+            this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
+
+            //switch(this.state.opcionBusqueda){
+            //    case "web": this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
+            //        console.log(data.webPages.value);
+            //        break;
+            //    case "videos": this.setState({ searchResult: data, tableResult: data.videos.value, loading: false });
+            //        console.log(data.videos.value);
+            //        break;
+            //    case "images": this.setState({ searchResult: data, tableResult: data.images.value, loading: false });
+            //        console.log(data.images.value);
+            //        break;
+            //    case "news": this.setState({ searchResult: data, tableResult: data.news.value, loading: false });
+            //        console.log(data.news.value);
+            //        break;
+            //    default: this.setState({ searchResult: data, tableResult: data.webPages.value, loading: false });
+            //        console.log(data.webPages.value);
+            //        break;
+            //}
             
             console.log(data);
 
