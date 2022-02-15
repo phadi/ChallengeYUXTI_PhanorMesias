@@ -12,8 +12,14 @@ namespace Challenge_Back.ModelsDB
 {
     public partial class ChallengeYuxiPMContext : DbContext
     {
+        string _connStr;
         public ChallengeYuxiPMContext()
         {
+        }
+
+        public ChallengeYuxiPMContext(string connStr)
+        {
+            _connStr = connStr;
         }
 
         public ChallengeYuxiPMContext(DbContextOptions<ChallengeYuxiPMContext> options)
@@ -28,7 +34,7 @@ namespace Challenge_Back.ModelsDB
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var connection = Configuration.GetConnectionString("BdLocationDBContext");
+                var connection = string.IsNullOrEmpty(_connStr) ? Configuration.GetConnectionString("BdLocationDBContext") : _connStr;
                 optionsBuilder.UseSqlServer(connection);
             }
         }

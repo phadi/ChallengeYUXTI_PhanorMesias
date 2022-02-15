@@ -22,6 +22,7 @@ export class BingSercher extends Component {
         return (
             
             <div>
+                <h3>BUSQUEDA POR WEBSITES</h3>
                 <table className='table table-striped' aria-labelledby="locationTable">
                     <thead>
                         <tr>
@@ -66,8 +67,7 @@ export class BingSercher extends Component {
                         onClick={this.buscaElemento}
                     />
                 </div>
-                <div>
-                    <h3>BUSQUEDA POR WEBSITES</h3>
+                <div>                    
                     {contents}
                 </div>                
             </div>            

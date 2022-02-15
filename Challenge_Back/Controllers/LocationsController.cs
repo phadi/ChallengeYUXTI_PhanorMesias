@@ -59,6 +59,7 @@ namespace Challenge_Back.Controllers
         /// <summary>
         /// Obtiene lista de localizacion de acuerdo al tipo de mensaje de <paramref name="messageType"/> 
         /// Y puede definir la ruta del archivo .csv con <paramref name="path"/>
+        /// Ejemplo ../locations/byPath?messageType=csv&path=https://www.Familiadedios.somee.com/LocationsExample.csv
         /// </summary>
         /// <param name="messageType">Tipo de mensaje a devolver</param>
         /// <param name="path">Ruta del archivo csv</param>
@@ -69,6 +70,16 @@ namespace Challenge_Back.Controllers
             return GetResponse(messageType, path);
         }
 
+        /// <summary>
+        /// Obtiene lista de localizacion de acuerdo al tipo de mensaje de <paramref name="messageType"/>
+        /// en el rango desde <paramref name="from"/> hasta <paramref name="to"/>
+        /// Ejemplo: ../locations/byRange?messageType=csv&from=10&to=13
+        /// </summary>
+        /// <param name="messageType">Tipo de mensaje a devolver</param>
+        /// <param name="from">Rango inicial</param>
+        /// <param name="to">Rango final</param>
+        /// <param name="path">Ruta del archivo csv</param>
+        /// <returns></returns>
         [HttpGet("byRange")]
         public string Get(string messageType, int from, int to, string path = null)
         {            

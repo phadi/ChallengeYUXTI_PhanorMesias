@@ -48,7 +48,7 @@ export class SearchWeb extends Component {
     async buscaElemento(query) {
         console.log("IMAGENES..." + query);
         this.setState({ tableResult: [] });
-        if (query != "") {
+        if (!(query === "" || query === undefined || query === null )) {
             this.setState({ tableResult: query.value });
             console.log(query);
         }
